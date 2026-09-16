@@ -1,0 +1,202 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-brand">
+                <div class="brand-icon">📚</div>
+                <div>
+                    <h1>Library Management System</h1>
+                    <p class="subtitle">Manage books, inventory, and categories effortlessly</p>
+                </div>
+            </div>
+            <button class="btn btn-primary" id="openAddModalBtn">
+                <span class="btn-icon">+</span> Add New Book
+            </button>
+        </header>
+
+        <!-- Stats Overview Cards -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon stat-blue">📖</div>
+                <div class="stat-info">
+                    <span class="stat-value" id="totalBooksCount">0</span>
+                    <span class="stat-label">Total Unique Books</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon stat-green">📦</div>
+                <div class="stat-info">
+                    <span class="stat-value" id="totalQuantityCount">0</span>
+                    <span class="stat-label">Total Stock / Copies</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon stat-purple">🏷️</div>
+                <div class="stat-info">
+                    <span class="stat-value" id="totalCategoriesCount">0</span>
+                    <span class="stat-label">Unique Categories</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search & Filter Bar -->
+        <section class="toolbar">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Search by Title, Author, ISBN, or Category..." 
+                    autocomplete="off"
+                >
+                <button class="btn-clear" id="clearSearchBtn" title="Clear search" style="display: none;">&times;</button>
+            </div>
+            <div class="toolbar-actions">
+                <button class="btn btn-secondary" id="refreshBtn" title="Reload books">
+                    🔄 Refresh
+                </button>
+            </div>
+        </section>
+
+        <!-- Books Table Container -->
+        <section class="table-container">
+            <table class="books-table" id="booksTable">
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">ID</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>ISBN</th>
+                        <th>Category</th>
+                        <th style="width: 100px;">Quantity</th>
+                        <th style="width: 160px; text-align: center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="booksTableBody">
+                    <!-- Dynamic book rows will be rendered here by app.js -->
+                </tbody>
+            </table>
+
+            <!-- Empty / Loading State -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-icon">📂</div>
+                <h3 id="emptyStateTitle">No books found</h3>
+                <p id="emptyStateDesc">Try adjusting your search or add a new book to the library.</p>
+                <button class="btn btn-primary" id="emptyAddBtn">+ Add First Book</button>
+            </div>
+            
+            <div class="loading-state" id="loadingState">
+                <div class="spinner"></div>
+                <p>Loading books from library database...</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal: Add / Edit Book -->
+    <div class="modal-backdrop" id="bookModalBackdrop">
+        <div class="modal" role="dialog" aria-modal="true">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Book</h2>
+                <button class="modal-close" id="closeModalBtn">&times;</button>
+            </div>
+            <form id="bookForm" novalidate>
+                <div class="modal-body">
+                    <!-- Hidden input for ID (only used in edit mode) -->
+                    <input type="hidden" id="bookId">
+
+                    <div class="form-alert" id="formAlert" style="display: none;"></div>
+
+                    <div class="form-group">
+                        <label for="bookTitle">Title <span class="required">*</span></label>
+                        <input type="text" id="bookTitle" name="title" placeholder="e.g. Clean Code" required>
+                        <span class="field-error" id="titleError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bookAuthor">Author <span class="required">*</span></label>
+                        <input type="text" id="bookAuthor" name="author" placeholder="e.g. Robert C. Martin" required>
+                        <span class="field-error" id="authorError"></span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="bookIsbn">ISBN <span class="required">*</span></label>
+                            <input type="text" id="bookIsbn" name="isbn" placeholder="e.g. 978-0132350884" required>
+                            <span class="field-error" id="isbnError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bookCategory">Category <span class="required">*</span></label>
+                            <input 
+                                type="text" 
+                                id="bookCategory" 
+                                name="category" 
+                                placeholder="e.g. Technology, Fiction..." 
+                                list="categorySuggestions" 
+                                required
+                            >
+                            <datalist id="categorySuggestions">
+                                <option value="Computer Science">
+                                <option value="Programming">
+                                <option value="Fiction">
+                                <option value="Non-Fiction">
+                                <option value="Science">
+                                <option value="Mathematics">
+                                <option value="History">
+                                <option value="Literature">
+                                <option value="Business">
+                                <option value="Philosophy">
+                            </datalist>
+                            <span class="field-error" id="categoryError"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bookQuantity">Quantity <span class="required">*</span></label>
+                        <input type="number" id="bookQuantity" name="quantity" min="0" value="1" required>
+                        <span class="field-error" id="quantityError"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelModalBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveBookBtn">Save Book</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Delete Confirmation -->
+    <div class="modal-backdrop" id="deleteModalBackdrop">
+        <div class="modal modal-sm" role="dialog" aria-modal="true">
+            <div class="modal-header">
+                <h2>Confirm Delete</h2>
+                <button class="modal-close" id="closeDeleteModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong id="deleteBookTitle"></strong>?</p>
+                <p class="text-muted small">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete Book</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Application JavaScript -->
+    <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>
