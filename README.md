@@ -1,4 +1,4 @@
-# 📚 Library Management System
+# Library Management System
 
 A simple, robust, and full-stack **Library Management System** built with **Python Django**, **Django REST Framework (DRF)**, **SQLite**, and a clean vanilla **HTML / CSS / JavaScript** frontend.
 
@@ -6,7 +6,7 @@ Designed with clean, well-commented code that is easy to understand and explain 
 
 ---
 
-## 🚀 How to Run the Project (Quick Start)
+##  How to Run the Project (Quick Start)
 
 ### Step 1: Open Terminal & Navigate to Project
 ```powershell
@@ -28,7 +28,7 @@ http://127.0.0.1:8000/
 
 ---
 
-## 📋 Features Implemented
+##  Features Implemented
 
 1. **Add Book**: Add new books with Title, Author, ISBN, Category, and Quantity.
 2. **View Books**: Display all books in a responsive, clean table with live inventory statistics.
@@ -39,7 +39,7 @@ http://127.0.0.1:8000/
 
 ---
 
-## 🔌 REST API Endpoints
+##  REST API Endpoints
 
 All API endpoints return and accept JSON.
 
@@ -54,7 +54,7 @@ All API endpoints return and accept JSON.
 
 ---
 
-## 📁 Project Directory Structure
+##  Project Directory Structure
 
 ```
 library-management-system/
@@ -107,7 +107,7 @@ OK
 
 ---
 
-## 🎓 College Viva & Interview Guide
+##  College Viva & Interview Guide
 
 ### 1. What architecture does this project follow?
 - **Client-Server Architecture** / **RESTful API**:
